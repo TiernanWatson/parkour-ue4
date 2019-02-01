@@ -2,6 +2,7 @@
 
 #include "StateMachine.h"
 #include "CustomComponents/IState.h"
+#include "Containers/Map.h"
 
 // Sets default values for this component's properties
 UStateMachine::UStateMachine()
@@ -27,8 +28,24 @@ void UStateMachine::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 		UE_LOG(LogTemp, Warning, TEXT("No state currently active in State Machine"));
 }
 
-void UStateMachine::GoToState(IState* State)
+void UStateMachine::GoToState(FName Name)
 {
-	UStateMachine::State = State;
+	if (State)
+		State->OnExit();
+
+	State = *AllStates.Find(Name);
+
+	if (State == nullptr) 
+	{
+		UE_LOG(LogTemp, Error, TEXT("State not found. Returning."));
+		return;
+	}
+
+	State->OnEnter();
+}
+
+void UStateMachine::AddState(FName Name, IState * State)
+{
+	AllStates.Add(Name, State);
 }
 

@@ -22,11 +22,13 @@ protected:
 
 	class IState* State;
 	
-	class TArray<IState*> AllStates;
+	class TMap<FName, IState*> AllStates;
 
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void GoToState(IState* State);
+	void GoToState(FName Name);
+
+	void AddState(FName Name, IState* State);
 };

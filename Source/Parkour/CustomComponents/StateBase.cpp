@@ -9,11 +9,22 @@ UStateBase::UStateBase()
 {
 	// Do not want state to be ticking from the get go - only when needed
 	PrimaryComponentTick.bCanEverTick = false;
+
+	Owner = Cast<AParkourCharacter>(GetOwner());
+
+	if (Owner)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Found Owner"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Didnt find :("));
+	}
 }
 
 void UStateBase::BeginPlay()
 {
-	Owner = Cast<AParkourCharacter>(GetOwner()->GetComponentByClass(AParkourCharacter::StaticClass()));
+	
 }
 
 void UStateBase::OnEnter()

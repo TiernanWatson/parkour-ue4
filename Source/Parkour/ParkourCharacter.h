@@ -34,6 +34,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
 
+	/** If true, the character has the ability to crouch **/
+	bool bAllowCrouch;
+
 protected:
 	/** Resets HMD orientation in VR. */
 	void OnResetVR();
@@ -43,6 +46,12 @@ protected:
 
 	/** Called for side to side input */
 	void MoveRight(float Value);
+
+	/** Wrapper to allow character to crouch with input **/
+	void TryCrouch();
+
+	/** Uncrouches the character if crouching **/
+	void TryUnCrouch();
 
 	/** 
 	 * Called via input to turn at a given rate. 
@@ -67,9 +76,12 @@ protected:
 
 	virtual void Tick(float DeltaSeconds) override;
 
-	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	// End of APawn interface
+
+public:
+	void SetGravityScale(float Value);
+
+	virtual bool CanCrouch() override;
 
 public:
 	/** Returns CameraBoom subobject **/
@@ -77,4 +89,3 @@ public:
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 };
-

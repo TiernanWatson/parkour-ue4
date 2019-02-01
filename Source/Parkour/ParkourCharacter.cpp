@@ -35,6 +35,7 @@ AParkourCharacter::AParkourCharacter()
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f); // ...at this rotation rate
 	GetCharacterMovement()->JumpZVelocity = 600.f;
 	GetCharacterMovement()->AirControl = 0.2f;
+	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 
 	// Create a camera boom (pulls in towards the player if there is a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -49,8 +50,7 @@ AParkourCharacter::AParkourCharacter()
 
 	// Setup player's state control
 	StateMachine = CreateDefaultSubobject<UStateMachine>(TEXT("StateMachine"));
-	IState* State = CreateDefaultSubobject<USLocomotion>(TEXT("LocomotionState"));
-	StateMachine->GoToState(State);
+	StateMachine->AddState(FName("Locomotion"), CreateDefaultSubobject<USLocomotion>(TEXT("LocomotionState")));
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
@@ -63,6 +63,7 @@ void AParkourCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	StateMachine->GoToState(FName("Locomotion"));
 }
 
 void AParkourCharacter::Tick(float DeltaSeconds)
@@ -77,6 +78,9 @@ void AParkourCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 	check(PlayerInputComponent);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+
+	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &AParkourCharacter::TryCrouch);
+	PlayerInputComponent->BindAction("Crouch", IE_Released, this, &AParkourCharacter::TryUnCrouch);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &AParkourCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AParkourCharacter::MoveRight);
@@ -97,6 +101,15 @@ void AParkourCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &AParkourCharacter::OnResetVR);
 }
 
+void AParkourCharacter::SetGravityScale(float Value)
+{
+	GetCharacterMovement()->GravityScale = Value;
+}
+
+bool AParkourCharacter::CanCrouch()
+{
+	return bAllowCrouch && Super::CanCrouch();
+}
 
 void AParkourCharacter::OnResetVR()
 {
@@ -151,5 +164,21 @@ void AParkourCharacter::MoveRight(float Value)
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
+	}
+}
+
+void AParkourCharacter::TryCrouch()
+{
+	if (CanCrouch()) 
+	{
+		Crouch();
+	}
+}
+
+void AParkourCharacter::TryUnCrouch()
+{
+	if (bIsCrouched) 
+	{
+		UnCrouch();
 	}
 }
