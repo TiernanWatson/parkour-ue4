@@ -10,15 +10,19 @@ USLocomotion::USLocomotion()
 
 void USLocomotion::OnEnter()
 {
+	Super::OnEnter();
+
 	Owner->bAllowCrouch = true;
 }
 
 void USLocomotion::OnExit()
 {
+	Super::OnExit();
+
 	Owner->bAllowCrouch = false;
 }
 
 void USLocomotion::Update(float DeltaTime)
 {
-	
+	Super::Update(DeltaTime);
 }

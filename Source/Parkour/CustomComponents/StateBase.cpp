@@ -22,11 +22,6 @@ UStateBase::UStateBase()
 	}
 }
 
-void UStateBase::BeginPlay()
-{
-	
-}
-
 void UStateBase::OnEnter()
 {
 }

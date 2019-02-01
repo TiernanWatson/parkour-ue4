@@ -18,9 +18,6 @@ public:
 	UStateBase();
 
 protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
-
 	class AParkourCharacter* Owner;
 
 public:	
