@@ -10,6 +10,7 @@
 #include "CustomComponents/StateMachine.h"
 #include "CustomComponents/PlayerStates/SLocomotion.h"
 #include "CustomComponents/PlayerStates/InAir.h"
+#include "CustomComponents/PlayerStates/LedgeClimbing.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -40,23 +41,11 @@ AParkourCharacter::AParkourCharacter()
 	GetCharacterMovement()->AirControl = 0.2f;
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 
-	// Create a camera boom (pulls in towards the player if there is a collision)
-	/*CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->TargetArmLength = 300.0f; // The camera follows at this distance behind the character	
-	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller*/
-
-	// Create a follow camera
-	/*FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
-	//FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
-	FollowCamera->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("HeadSocket"));
-	//FollowCamera->SetupAttachment(Cast<USceneComponent>(GetMesh()), FName("HeadSocket"));
-	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm*/
-
 	// Setup player's state control
 	StateMachine = CreateDefaultSubobject<UStateMachine>(TEXT("StateMachine"));
 	StateMachine->AddState(FName("Locomotion"), CreateDefaultSubobject<USLocomotion>(TEXT("LocomotionState")));
 	StateMachine->AddState(FName("InAir"), CreateDefaultSubobject<UInAir>(TEXT("AirState")));
+	StateMachine->AddState(FName("LedgeClimbing"), CreateDefaultSubobject<ULedgeClimbing>(TEXT("ClimbState")));
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
@@ -151,7 +140,7 @@ void AParkourCharacter::LookUpAtRate(float Rate)
 
 void AParkourCharacter::MoveForward(float Value)
 {
-	if ((Controller != NULL) && (Value != 0.0f))
+	if (bCanMove && (Controller != NULL) && (Value != 0.0f))
 	{
 		// find out which way is forward
 		const FRotator Rotation = Controller->GetControlRotation();
@@ -165,7 +154,7 @@ void AParkourCharacter::MoveForward(float Value)
 
 void AParkourCharacter::MoveRight(float Value)
 {
-	if ( (Controller != NULL) && (Value != 0.0f) )
+	if (bCanMove && (Controller != NULL) && (Value != 0.0f))
 	{
 		// find out which way is right
 		const FRotator Rotation = Controller->GetControlRotation();

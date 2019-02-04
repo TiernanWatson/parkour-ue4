@@ -14,6 +14,7 @@ void USLocomotion::OnEnter()
 	Super::OnEnter();
 
 	Owner->bAllowCrouch = true;
+	Owner->bCanMove = true;
 }
 
 void USLocomotion::OnExit()

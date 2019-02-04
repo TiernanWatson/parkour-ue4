@@ -26,7 +26,7 @@ void UInAir::Update(float DeltaTime)
 		return;
 	}
 
-	//FindLedges();
+	FindLedges();
 }
 
 void UInAir::FindLedges()
@@ -55,8 +55,8 @@ void UInAir::FindLedges()
 
 			UE_LOG(LogTemp, Warning, TEXT("Found a ledge 2! at %s"), *FString(NewLocation.ToString()));
 
-			Owner->SetGravityScale(0.f);
 			Owner->SetActorLocationAndRotation(NewLocation, Rotation.Quaternion());
+			Owner->StateMachine->GoToState(FName("LedgeClimbing"));
 		}
 	}
 }
