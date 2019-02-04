@@ -20,12 +20,12 @@ class AParkourCharacter : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
 
+public:
+	AParkourCharacter();
+
 	/** State machine controlling player's abilities **/
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = StateControl, meta = (AllowPrivateAccess = "true"))
 	class UStateMachine* StateMachine;
-
-public:
-	AParkourCharacter();
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
@@ -81,6 +81,8 @@ protected:
 
 public:
 	void SetGravityScale(float Value);
+
+	bool IsGrounded();
 
 	virtual bool CanCrouch() override;
 

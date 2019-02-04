@@ -2,6 +2,7 @@
 
 #include "SLocomotion.h"
 #include "ParkourCharacter.h"
+#include "CustomComponents/StateMachine.h"
 
 // Sets default values for this component's properties
 USLocomotion::USLocomotion()
@@ -25,4 +26,10 @@ void USLocomotion::OnExit()
 void USLocomotion::Update(float DeltaTime)
 {
 	Super::Update(DeltaTime);
+
+	if (!Owner->IsGrounded())
+	{
+		Owner->StateMachine->GoToState(FName("InAir"));
+		return;
+	}
 }

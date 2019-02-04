@@ -11,15 +11,6 @@ UStateBase::UStateBase()
 	PrimaryComponentTick.bCanEverTick = false;
 
 	Owner = Cast<AParkourCharacter>(GetOwner());
-
-	if (Owner)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Found Owner"));
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Didnt find :("));
-	}
 }
 
 void UStateBase::OnEnter()

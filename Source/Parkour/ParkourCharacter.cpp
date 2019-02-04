@@ -9,6 +9,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "CustomComponents/StateMachine.h"
 #include "CustomComponents/PlayerStates/SLocomotion.h"
+#include "CustomComponents/PlayerStates/InAir.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -55,6 +56,7 @@ AParkourCharacter::AParkourCharacter()
 	// Setup player's state control
 	StateMachine = CreateDefaultSubobject<UStateMachine>(TEXT("StateMachine"));
 	StateMachine->AddState(FName("Locomotion"), CreateDefaultSubobject<USLocomotion>(TEXT("LocomotionState")));
+	StateMachine->AddState(FName("InAir"), CreateDefaultSubobject<UInAir>(TEXT("AirState")));
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
@@ -108,6 +110,11 @@ void AParkourCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 void AParkourCharacter::SetGravityScale(float Value)
 {
 	GetCharacterMovement()->GravityScale = Value;
+}
+
+bool AParkourCharacter::IsGrounded()
+{
+	return !GetCharacterMovement()->IsFalling();
 }
 
 bool AParkourCharacter::CanCrouch()
